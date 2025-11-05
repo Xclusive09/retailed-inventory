@@ -1,0 +1,509 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="/assets/css/styles.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+<div class="flex h-screen">
+    <div id="sidebar"></div>
+
+    <div class="flex-1 flex flex-col overflow-hidden">
+        <header class="bg-white shadow-sm">
+            <div class="px-4 sm:px-6 py-4 flex items-center justify-between">
+                <div class="flex items-center">
+                    <button id="mobile-menu-btn" class="lg:hidden text-gray-500 hover:text-gray-700 mr-4">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                    <h2 class="text-xl font-semibold text-gray-800">Inventory Management</h2>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="relative hidden md:block">
+                        <input type="text" id="search-input" placeholder="Search items..."
+                               class="pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    </div>
+                    <button id="add-new-btn" class="btn-animate bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center">
+                        <i class="fas fa-plus mr-2"></i>
+                        <span class="hidden sm:inline">Add Item</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto p-4 sm:p-6">
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <div class="bg-white rounded-lg shadow-sm p-4 hover-card">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-boxes text-blue-600"></i>
+                            </div>
+                        </div>
+                        <div class="ml-4">
+                            <div class="text-sm font-medium text-gray-500">Total Items</div>
+                            <div class="text-lg font-semibold text-gray-900" id="total-items">0</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-sm p-4 hover-card">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-dollar-sign text-green-600"></i>
+                            </div>
+                        </div>
+                        <div class="ml-4">
+                            <div class="text-sm font-medium text-gray-500">Total Value</div>
+                            <div class="text-lg font-semibold text-gray-900" id="total-value">₦0</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-sm p-4 hover-card">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <div class="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-exclamation-triangle text-red-600"></i>
+                            </div>
+                        </div>
+                        <div class="ml-4">
+                            <div class="text-sm font-medium text-gray-500">Low Stock</div>
+                            <div class="text-lg font-semibold text-gray-900" id="low-stock">0</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-sm p-4 hover-card">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-tags text-purple-600"></i>
+                            </div>
+                        </div>
+                        <div class="ml-4">
+                            <div class="text-sm font-medium text-gray-500">Categories</div>
+                            <div class="text-lg font-semibold text-gray-900" id="categories">0</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add Item Form (Hidden by default) -->
+            <div class="bg-white rounded-lg shadow-sm p-6 mb-6 hidden" id="add-item-section">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900">
+                        <i class="fas fa-plus text-blue-600 mr-2"></i>Add New Item
+                    </h3>
+                    <button id="close-form-btn" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <form id="add-item-form" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div class="space-y-2">
+                        <label for="item-name" class="block text-sm font-medium text-gray-700">Item Name *</label>
+                        <input type="text" id="item-name" required class="form-input">
+                    </div>
+                    <div class="space-y-2">
+                        <label for="item-category" class="block text-sm font-medium text-gray-700">Category</label>
+                        <select id="item-category" class="form-input">
+                            <option value="Clothing">Clothing</option>
+                            <option value="Footwear">Footwear</option>
+                            <option value="Accessories">Accessories</option>
+                            <option value="Electronics">Electronics</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="space-y-2">
+                        <label for="item-brand" class="block text-sm font-medium text-gray-700">Brand</label>
+                        <input type="text" id="item-brand" class="form-input">
+                    </div>
+                    <div class="space-y-2">
+                        <label for="item-sku" class="block text-sm font-medium text-gray-700">SKU</label>
+                        <input type="text" id="item-sku" class="form-input">
+                    </div>
+                    <div class="space-y-2">
+                        <label for="item-quantity" class="block text-sm font-medium text-gray-700">Quantity *</label>
+                        <input type="number" id="item-quantity" required min="0" class="form-input">
+                    </div>
+                    <div class="space-y-2">
+                        <label for="item-price" class="block text-sm font-medium text-gray-700">Price (₦) *</label>
+                        <input type="number" id="item-price" required min="0" step="0.01" class="form-input">
+                    </div>
+                    <div class="space-y-2">
+                        <label for="item-threshold" class="block text-sm font-medium text-gray-700">Low Stock Threshold *</label>
+                        <input type="number" id="item-threshold" required min="1" class="form-input">
+                    </div>
+                    <div class="space-y-2">
+                        <label for="item-supplier" class="block text-sm font-medium text-gray-700">Supplier</label>
+                        <input type="text" id="item-supplier" class="form-input">
+                    </div>
+                    <div class="space-y-2 md:col-span-2 lg:col-span-1">
+                        <label for="item-description" class="block text-sm font-medium text-gray-700">Description</label>
+                        <input type="text" id="item-description" class="form-input">
+                    </div>
+                    <div class="md:col-span-2 lg:col-span-3 flex justify-end space-x-3">
+                        <button type="button" id="cancel-btn" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+                            Cancel
+                        </button>
+                        <button type="submit" class="btn-animate bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
+                            <i class="fas fa-save mr-2"></i>Save Item
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Filter and Actions Bar -->
+            <div class="bg-white rounded-lg shadow-sm p-4 mb-6">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
+                    <div class="flex flex-wrap items-center space-x-4">
+                        <select id="category-filter" class="border rounded-lg px-3 py-2">
+                            <option value="">All Categories</option>
+                            <option value="Clothing">Clothing</option>
+                            <option value="Footwear">Footwear</option>
+                            <option value="Accessories">Accessories</option>
+                            <option value="Electronics">Electronics</option>
+                        </select>
+                        <select id="stock-filter" class="border rounded-lg px-3 py-2">
+                            <option value="">All Items</option>
+                            <option value="low">Low Stock</option>
+                            <option value="in-stock">In Stock</option>
+                            <option value="out-of-stock">Out of Stock</option>
+                        </select>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button id="export-btn" class="text-gray-600 hover:text-gray-800 px-3 py-2 border rounded-lg">
+                            <i class="fas fa-download mr-2"></i>Export
+                        </button>
+                        <button id="refresh-btn" class="text-gray-600 hover:text-gray-800 px-3 py-2 border rounded-lg">
+                            <i class="fas fa-sync-alt mr-2"></i>Refresh
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Inventory Table -->
+            <div class="bg-white rounded-lg shadow-sm">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-900">Inventory Items</h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Item Details
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Category
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Stock
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Price
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Status
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Actions
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody id="inventory-list" class="bg-white divide-y divide-gray-200">
+                        <!-- Items will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Loading State -->
+                <div id="loading-state" class="flex items-center justify-center py-12">
+                    <div class="loading-spinner mr-3"></div>
+                    <span class="text-gray-500">Loading inventory...</span>
+                </div>
+
+                <!-- Empty State -->
+                <div id="empty-state" class="hidden text-center py-12">
+                    <div class="mx-auto w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                        <i class="fas fa-boxes text-gray-400 text-3xl"></i>
+                    </div>
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">No items found</h3>
+                    <p class="text-gray-500 mb-4">Get started by adding your first inventory item.</p>
+                    <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                        <i class="fas fa-plus mr-2"></i>Add First Item
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script type="module">
+    import { insertSidebar } from '../components/sidebar.js';
+    import { initializeMockData } from '../assets/data/mock-data.js';
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        // Initialize data and sidebar
+        initializeMockData();
+        document.getElementById('sidebar').innerHTML = insertSidebar('dashboard');
+
+        // Import and initialize dashboard
+        const { default: Dashboard } = await import('../assets/js/dashboard.js');
+
+        // Mobile menu functionality
+        document.getElementById('mobile-menu-btn')?.addEventListener('click', toggleMobileSidebar);
+
+        // Global logout function
+        window.logout = () => {
+            localStorage.removeItem('currentUser');
+            window.location.href = '/index.html';
+        };
+
+        // Mobile sidebar toggle
+        window.toggleMobileSidebar = () => {
+            const overlay = document.getElementById('mobile-sidebar-overlay');
+            if (overlay) {
+                overlay.classList.toggle('hidden');
+            }
+        };
+    });
+
+    async function initializePage() {
+        const elements = {
+            searchInput: document.getElementById('search-input'),
+            categoryFilter: document.getElementById('category-filter'),
+            stockFilter: document.getElementById('stock-filter'),
+            addNewBtn: document.getElementById('add-new-btn'),
+            addItemSection: document.getElementById('add-item-section'),
+            addItemForm: document.getElementById('add-item-form'),
+            cancelBtn: document.getElementById('cancel-btn'),
+            closeFormBtn: document.getElementById('close-form-btn'),
+            inventoryList: document.getElementById('inventory-list'),
+            loadingState: document.getElementById('loading-state'),
+            emptyState: document.getElementById('empty-state'),
+            refreshBtn: document.getElementById('refresh-btn')
+        };
+
+        let currentItems = [];
+        let filteredItems = [];
+
+        // Load and render inventory
+        async function loadInventory() {
+            elements.loadingState.classList.remove('hidden');
+            elements.emptyState.classList.add('hidden');
+
+            await new Promise(resolve => setTimeout(resolve, 500)); // Simulate loading
+
+            currentItems = getAllItems();
+            filteredItems = [...currentItems];
+
+            elements.loadingState.classList.add('hidden');
+            renderInventory();
+            updateStats();
+        }
+
+        function renderInventory() {
+            if (filteredItems.length === 0) {
+                elements.inventoryList.innerHTML = '';
+                elements.emptyState.classList.remove('hidden');
+                return;
+            }
+
+            elements.emptyState.classList.add('hidden');
+            elements.inventoryList.innerHTML = filteredItems.map(item => {
+                const stockStatus = item.quantity <= item.lowStockThreshold ? 'low' :
+                    item.quantity === 0 ? 'out' : 'in-stock';
+                const statusConfig = {
+                    'low': { class: 'status-badge warning', icon: 'exclamation-triangle', text: 'Low Stock' },
+                    'out': { class: 'status-badge danger', icon: 'times-circle', text: 'Out of Stock' },
+                    'in-stock': { class: 'status-badge success', icon: 'check-circle', text: 'In Stock' }
+                };
+                const status = statusConfig[stockStatus];
+
+                return `
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0 h-10 w-10">
+                                        <div class="h-10 w-10 rounded-lg bg-gray-100 flex items-center justify-center">
+                                            <i class="fas fa-box text-gray-500"></i>
+                                        </div>
+                                    </div>
+                                    <div class="ml-4">
+                                        <div class="text-sm font-medium text-gray-900">${item.name}</div>
+                                        <div class="text-sm text-gray-500">${item.sku || 'No SKU'} • ${item.brand || 'No Brand'}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                    ${item.category}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900">${item.quantity}</div>
+                                <div class="text-sm text-gray-500">Threshold: ${item.lowStockThreshold}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm font-medium text-gray-900">₦${item.price.toLocaleString()}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="${status.class}">
+                                    <i class="fas fa-${status.icon} mr-1"></i>
+                                    ${status.text}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <div class="flex items-center space-x-2">
+                                    <button onclick="editItem(${item.id})" class="text-blue-600 hover:text-blue-900" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button onclick="deleteItemConfirm(${item.id})" class="text-red-600 hover:text-red-900" title="Delete">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                    <button onclick="viewDetails(${item.id})" class="text-gray-600 hover:text-gray-900" title="View Details">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+            }).join('');
+        }
+
+        function updateStats() {
+            const totalItems = currentItems.length;
+            const totalValue = currentItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const lowStockCount = currentItems.filter(item => item.quantity <= item.lowStockThreshold).length;
+            const categories = new Set(currentItems.map(item => item.category)).size;
+
+            document.getElementById('total-items').textContent = totalItems;
+            document.getElementById('total-value').textContent = `₦${totalValue.toLocaleString()}`;
+            document.getElementById('low-stock').textContent = lowStockCount;
+            document.getElementById('categories').textContent = categories;
+        }
+
+        function filterItems() {
+            const searchTerm = elements.searchInput.value.toLowerCase();
+            const categoryFilter = elements.categoryFilter.value;
+            const stockFilter = elements.stockFilter.value;
+
+            filteredItems = currentItems.filter(item => {
+                const matchesSearch = item.name.toLowerCase().includes(searchTerm) ||
+                    (item.sku && item.sku.toLowerCase().includes(searchTerm)) ||
+                    (item.brand && item.brand.toLowerCase().includes(searchTerm));
+
+                const matchesCategory = !categoryFilter || item.category === categoryFilter;
+
+                let matchesStock = true;
+                if (stockFilter === 'low') matchesStock = item.quantity <= item.lowStockThreshold;
+                else if (stockFilter === 'in-stock') matchesStock = item.quantity > item.lowStockThreshold;
+                else if (stockFilter === 'out-of-stock') matchesStock = item.quantity === 0;
+
+                return matchesSearch && matchesCategory && matchesStock;
+            });
+
+            renderInventory();
+        }
+
+        function generateSKU() {
+            return 'SKU' + Date.now().toString().slice(-6);
+        }
+
+        // Event Listeners
+        elements.searchInput.addEventListener('input', filterItems);
+        elements.categoryFilter.addEventListener('change', filterItems);
+        elements.stockFilter.addEventListener('change', filterItems);
+
+        elements.addNewBtn.addEventListener('click', () => {
+            elements.addItemSection.classList.remove('hidden');
+            document.getElementById('item-sku').value = generateSKU();
+        });
+
+        [elements.cancelBtn, elements.closeFormBtn].forEach(btn => {
+            btn?.addEventListener('click', () => {
+                elements.addItemSection.classList.add('hidden');
+                elements.addItemForm.reset();
+            });
+        });
+
+        elements.refreshBtn.addEventListener('click', loadInventory);
+
+        elements.addItemForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = new FormData(elements.addItemForm);
+            const itemData = {
+                name: document.getElementById('item-name').value,
+                category: document.getElementById('item-category').value,
+                brand: document.getElementById('item-brand').value,
+                sku: document.getElementById('item-sku').value,
+                quantity: parseInt(document.getElementById('item-quantity').value),
+                price: parseFloat(document.getElementById('item-price').value),
+                lowStockThreshold: parseInt(document.getElementById('item-threshold').value),
+                supplier: document.getElementById('item-supplier').value,
+                description: document.getElementById('item-description').value,
+                dateAdded: new Date().toISOString(),
+                lastUpdated: new Date().toISOString()
+            };
+
+            try {
+                addItem(itemData);
+                elements.addItemSection.classList.add('hidden');
+                elements.addItemForm.reset();
+                await loadInventory();
+
+                // Show success message
+                showToast('Item added successfully!', 'success');
+            } catch (error) {
+                showToast('Error adding item: ' + error.message, 'error');
+            }
+        });
+
+        // Global functions for row actions
+        window.editItem = (id) => {
+            // Implementation for edit functionality
+            console.log('Edit item:', id);
+        };
+
+        window.deleteItemConfirm = (id) => {
+            if (confirm('Are you sure you want to delete this item?')) {
+                try {
+                    deleteItem(id);
+                    loadInventory();
+                    showToast('Item deleted successfully!', 'success');
+                } catch (error) {
+                    showToast('Error deleting item: ' + error.message, 'error');
+                }
+            }
+        };
+
+        window.viewDetails = (id) => {
+            // Implementation for view details
+            console.log('View details for item:', id);
+        };
+
+        // Initialize
+        await loadInventory();
+    }
+
+    function showToast(message, type = 'success') {
+        const toast = document.createElement('div');
+        toast.className = `toast ${type === 'success' ? 'bg-green-500' : 'bg-red-500'} text-white`;
+        toast.textContent = message;
+        document.body.appendChild(toast);
+
+        setTimeout(() => toast.classList.add('show'), 100);
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="/assets/css/styles.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+<div class="flex h-screen">
+    <div id="sidebar"></div>
+
+    <div class="flex-1 flex flex-col overflow-hidden">
+        <header class="bg-white shadow-sm">
+            <div class="px-4 sm:px-6 py-4 flex items-center justify-between">
+                <div class="flex items-center">
+                    <button id="mobile-menu-btn" class="lg:hidden text-gray-500 hover:text-gray-700 mr-4">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                    <h2 class="text-xl font-semibold text-gray-800">Sales Management</h2>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button class="text-gray-500 hover:text-gray-700 relative">
+                        <i class="fas fa-bell text-xl"></i>
+                    </button>
+                    <button id="new-sale-btn" class="btn-animate bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center">
+                        <i class="fas fa-plus mr-2"></i>
+                        <span class="hidden sm:inline">New Sale</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto p-4 sm:p-6">
+            <!-- Sales Stats -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <div class="bg-white rounded-lg shadow-sm p-4 hover-card">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-chart-line text-green-600"></i>
+                            </div>
+                        </div>
+                        <div class="ml-4">
+                            <div class="text-sm font-medium text-gray-500">Today's Sales</div>
+                            <div class="text-lg font-semibold text-gray-900" id="today-sales">₦0</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-sm p-4 hover-card">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-shopping-cart text-blue-600"></i>
+                            </div>
+                        </div>
+                        <div class="ml-4">
+                            <div class="text-sm font-medium text-gray-500">Total Transactions</div>
+                            <div class="text-lg font-semibold text-gray-900" id="total-transactions">0</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-sm p-4 hover-card">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-calculator text-purple-600"></i>
+                            </div>
+                        </div>
+                        <div class="ml-4">
+                            <div class="text-sm font-medium text-gray-500">Average Sale</div>
+                            <div class="text-lg font-semibold text-gray-900" id="average-sale">₦0</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-sm p-4 hover-card">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <div class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-trophy text-orange-600"></i>
+                            </div>
+                        </div>
+                        <div class="ml-4">
+                            <div class="text-sm font-medium text-gray-500">Best Seller</div>
+                            <div class="text-lg font-semibold text-gray-900" id="best-seller">-</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- New Sale Form -->
+            <div class="bg-white rounded-lg shadow-sm p-6 mb-6 hidden" id="sale-form-section">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900">
+                        <i class="fas fa-cash-register text-green-600 mr-2"></i>Process New Sale
+                    </h3>
+                    <button id="close-sale-form" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <form id="sale-form" class="space-y-6">
+                    <!-- Customer Information -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="customer-name" class="block text-sm font-medium text-gray-700 mb-2">Customer Name</label>
+                            <input type="text" id="customer-name" class="form-input" placeholder="Optional">
+                        </div>
+                        <div>
+                            <label for="payment-method" class="block text-sm font-medium text-gray-700 mb-2">Payment Method</label>
+                            <select id="payment-method" class="form-input" required>
+                                <option value="">Select payment method</option>
+                                <option value="cash">Cash</option>
+                                <option value="card">Card</option>
+                                <option value="transfer">Bank Transfer</option>
+                                <option value="mobile">Mobile Money</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Items Selection -->
+                    <div class="border rounded-lg p-4">
+                        <div class="flex items-center justify-between mb-4">
+                            <h4 class="font-medium text-gray-900">Items</h4>
+                            <button type="button" id="add-item-to-sale" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                <i class="fas fa-plus mr-1"></i>Add Item
+                            </button>
+                        </div>
+                        <div id="sale-items" class="space-y-3">
+                            <!-- Sale items will be added here -->
+                        </div>
+                        <div class="hidden" id="item-template">
+                            <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg sale-item">
+                                <select class="item-select form-input flex-1" required>
+                                    <option value="">Choose an item...</option>
+                                </select>
+                                <div class="flex items-center space-x-2">
+                                    <label class="text-sm text-gray-600">Qty:</label>
+                                    <input type="number" class="quantity-input form-input w-20" min="1" value="1" required>
+                                </div>
+                                <div class="text-sm font-medium text-gray-900 min-w-[80px] item-total">₦0</div>
+                                <button type="button" class="remove-item text-red-600 hover:text-red-800">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sale Summary -->
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <div class="space-y-2">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Subtotal:</span>
+                                <span id="subtotal" class="font-medium">₦0</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Discount:</span>
+                                <div class="flex items-center space-x-2">
+                                    <input type="number" id="discount-amount" class="form-input w-20 text-sm" min="0" value="0" step="0.01">
+                                    <span class="text-sm text-gray-500">₦</span>
+                                </div>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Tax (10%):</span>
+                                <span id="tax-amount" class="font-medium">₦0</span>
+                            </div>
+                            <hr class="border-gray-300">
+                            <div class="flex justify-between text-lg font-semibold">
+                                <span>Total:</span>
+                                <span id="final-total" class="text-green-600">₦0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="flex justify-end space-x-3">
+                        <button type="button" id="cancel-sale" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+                            Cancel
+                        </button>
+                        <button type="submit" class="btn-animate bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700">
+                            <i class="fas fa-check mr-2"></i>Complete Sale
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Sales History -->
+            <div class="bg-white rounded-lg shadow-sm">
+                <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+                    <h3 class="text-lg font-semibold text-gray-900">Sales History</h3>
+                    <div class="flex items-center space-x-4">
+                        <input type="date" id="date-filter" class="form-input text-sm">
+                        <select id="payment-filter" class="form-input text-sm">
+                            <option value="">All Payments</option>
+                            <option value="cash">Cash</option>
+                            <option value="card">Card</option>
+                            <option value="transfer">Transfer</option>
+                            <option value="mobile">Mobile</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Items</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody id="sales-list" class="bg-white divide-y divide-gray-200">
+                        <!-- Sales will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Loading State -->
+                <div id="sales-loading" class="flex items-center justify-center py-12">
+                    <div class="loading-spinner mr-3"></div>
+                    <span class="text-gray-500">Loading sales...</span>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script type="module">
+    import { insertSidebar } from '../components/sidebar.js';
+    import { getAllItems } from '../assets/js/inventory.js';
+    import { getAllSales, addSale } from '../assets/js/sales.js';
+    import { initializeMockData } from '../assets/data/mock-data.js';
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        // Initialize
+        initializeMockData();
+        document.getElementById('sidebar').innerHTML = insertSidebar('sales');
+
+        await initializeSalesPage();
+    });
+
+    async function initializeSalesPage() {
+        const elements = {
+            newSaleBtn: document.getElementById('new-sale-btn'),
+            saleFormSection: document.getElementById('sale-form-section'),
+            closeSaleForm: document.getElementById('close-sale-form'),
+            cancelSale: document.getElementById('cancel-sale'),
+            saleForm: document.getElementById('sale-form'),
+            addItemToSale: document.getElementById('add-item-to-sale'),
+            saleItems: document.getElementById('sale-items'),
+            itemTemplate: document.getElementById('item-template'),
+            salesList: document.getElementById('sales-list'),
+            salesLoading: document.getElementById('sales-loading'),
+            discountAmount: document.getElementById('discount-amount'),
+            dateFilter: document.getElementById('date-filter'),
+            paymentFilter: document.getElementById('payment-filter')
+        };
+
+        let currentSaleItems = [];
+        let availableItems = [];
+
+        // Load data
+        async function loadData() {
+            elements.salesLoading.classList.remove('hidden');
+
+            await new Promise(resolve => setTimeout(resolve, 300));
+
+            availableItems = getAllItems().filter(item => item.quantity > 0);
+            const sales = getAllSales();
+
+            elements.salesLoading.classList.add('hidden');
+            renderSales(sales);
+            updateStats(sales);
+            populateItemSelects();
+        }
+
+        function updateStats(sales) {
+            const today = new Date().toDateString();
+            const todaySales = sales.filter(sale => new Date(sale.date).toDateString() === today);
+
+            const todayTotal = todaySales.reduce((sum, sale) => sum + (sale.finalTotal || sale.total), 0);
+            const totalTransactions = sales.length;
+            const averageSale = totalTransactions > 0 ? sales.reduce((sum, sale) => sum + (sale.finalTotal || sale.total), 0) / totalTransactions : 0;
+
+            // Find best seller
+            const itemCounts = {};
+            sales.forEach(sale => {
+                itemCounts[sale.itemName] = (itemCounts[sale.itemName] || 0) + sale.quantity;
+            });
+            const bestSeller = Object.keys(itemCounts).length > 0 ?
+                Object.keys(itemCounts).reduce((a, b) => itemCounts[a] > itemCounts[b] ? a : b) : '-';
+
+            document.getElementById('today-sales').textContent = `₦${todayTotal.toLocaleString()}`;
+            document.getElementById('total-transactions').textContent = totalTransactions;
+            document.getElementById('average-sale').textContent = `₦${averageSale.toLocaleString()}`;
+            document.getElementById('best-seller').textContent = bestSeller.length > 15 ? bestSeller.substring(0, 15) + '...' : bestSeller;
+        }
+
+        function renderSales(sales) {
+            elements.salesList.innerHTML = sales.map(sale => `
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            ${new Date(sale.date).toLocaleDateString()}
+                            <div class="text-xs text-gray-500">${new Date(sale.date).toLocaleTimeString()}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            ${sale.customerName || 'Walk-in Customer'}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900">${sale.itemName}</div>
+                            <div class="text-xs text-gray-500">Qty: ${sale.quantity}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                ${sale.paymentMethod === 'cash' ? 'bg-green-100 text-green-800' :
+                sale.paymentMethod === 'card' ? 'bg-blue-100 text-blue-800' :
+                    sale.paymentMethod === 'transfer' ? 'bg-purple-100 text-purple-800' :
+                        'bg-orange-100 text-orange-800'}">
+                                <i class="fas fa-${sale.paymentMethod === 'cash' ? 'money-bill-wave' :
+                sale.paymentMethod === 'card' ? 'credit-card' :
+                    sale.paymentMethod === 'transfer' ? 'university' : 'mobile-alt'} mr-1"></i>
+                                ${sale.paymentMethod.charAt(0).toUpperCase() + sale.paymentMethod.slice(1)}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            ₦${(sale.finalTotal || sale.total).toLocaleString()}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <button onclick="viewSaleDetails(${sale.id})" class="text-blue-600 hover:text-blue-900 mr-2">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button onclick="printReceipt(${sale.id})" class="text-gray-600 hover:text-gray-900">
+                                <i class="fas fa-print"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+        }
+
+        function populateItemSelects() {
+            const selects = document.querySelectorAll('.item-select');
+            selects.forEach(select => {
+                select.innerHTML = '<option value="">Choose an item...</option>' +
+                    availableItems.map(item =>
+                        `<option value="${item.id}" data-price="${item.price}" data-stock="${item.quantity}">
+                                ${item.name} (₦${item.price.toLocaleString()} - ${item.quantity} in stock)
+                            </option>`
+                    ).join('');
+            });
+        }
+
+        function addSaleItem() {
+            const template = elements.itemTemplate.cloneNode(true);
+            template.classList.remove('hidden');
+            template.removeAttribute('id');
+
+            elements.saleItems.appendChild(template);
+            populateItemSelects();
+
+            // Add event listeners for this item
+            const itemSelect = template.querySelector('.item-select');
+            const quantityInput = template.querySelector('.quantity-input');
+            const removeBtn = template.querySelector('.remove-item');
+
+            [itemSelect, quantityInput].forEach(input => {
+                input.addEventListener('change', calculateSaleTotal);
+            });
+
+            removeBtn.addEventListener('click', () => {
+                template.remove();
+                calculateSaleTotal();
+            });
+        }
+
+        function calculateSaleTotal() {
+            let subtotal = 0;
+            const saleItems = document.querySelectorAll('.sale-item:not(.hidden)');
+
+            saleItems.forEach(item => {
+                const select = item.querySelector('.item-select');
+                const quantity = parseInt(item.querySelector('.quantity-input').value) || 0;
+                const totalElement = item.querySelector('.item-total');
+
+                if (select.value && quantity > 0) {
+                    const option = select.selectedOptions[0];
+                    const price = parseFloat(option.dataset.price) || 0;
+                    const itemTotal = price * quantity;
+
+                    totalElement.textContent = `₦${itemTotal.toLocaleString()}`;
+                    subtotal += itemTotal;
+                } else {
+                    totalElement.textContent = '₦0';
+                }
+            });
+
+            const discount = parseFloat(elements.discountAmount.value) || 0;
+            const tax = (subtotal - discount) * 0.1;
+            const finalTotal = subtotal - discount + tax;
+
+            document.getElementById('subtotal').textContent = `₦${subtotal.toLocaleString()}`;
+            document.getElementById('tax-amount').textContent = `₦${tax.toLocaleString()}`;
+            document.getElementById('final-total').textContent = `₦${finalTotal.toLocaleString()}`;
+        }
+
+        // Event Listeners
+        elements.newSaleBtn.addEventListener('click', () => {
+            elements.saleFormSection.classList.remove('hidden');
+            addSaleItem(); // Add first item row
+        });
+
+        [elements.closeSaleForm, elements.cancelSale].forEach(btn => {
+            btn?.addEventListener('click', () => {
+                elements.saleFormSection.classList.add('hidden');
+                elements.saleForm.reset();
+                elements.saleItems.innerHTML = '';
+            });
+        });
+
+        elements.addItemToSale.addEventListener('click', addSaleItem);
+        elements.discountAmount.addEventListener('input', calculateSaleTotal);
+
+        elements.saleForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const saleItems = Array.from(document.querySelectorAll('.sale-item:not(.hidden)'))
+                .map(item => ({
+                    itemId: parseInt(item.querySelector('.item-select').value),
+                    quantity: parseInt(item.querySelector('.quantity-input').value)
+                }))
+                .filter(item => item.itemId && item.quantity > 0);
+
+            if (saleItems.length === 0) {
+                alert('Please add at least one item to the sale.');
+                return;
+            }
+
+            try {
+                for (const saleItem of saleItems) {
+                    const customerName = document.getElementById('customer-name').value || 'Walk-in Customer';
+                    const paymentMethod = document.getElementById('payment-method').value;
+                    const discount = parseFloat(elements.discountAmount.value) || 0;
+
+                    await addSale(saleItem.itemId, saleItem.quantity, {
+                        customerName,
+                        paymentMethod,
+                        discount
+                    });
+                }
+
+                elements.saleFormSection.classList.add('hidden');
+                elements.saleForm.reset();
+                elements.saleItems.innerHTML = '';
+
+                await loadData();
+                showToast('Sale completed successfully!', 'success');
+            } catch (error) {
+                showToast('Error processing sale: ' + error.message, 'error');
+            }
+        });
+
+        // Filter events
+        elements.dateFilter.addEventListener('change', filterSales);
+        elements.paymentFilter.addEventListener('change', filterSales);
+
+        function filterSales() {
+            const dateFilter = elements.dateFilter.value;
+            const paymentFilter = elements.paymentFilter.value;
+
+            let filteredSales = getAllSales();
+
+            if (dateFilter) {
+                filteredSales = filteredSales.filter(sale =>
+                    new Date(sale.date).toDateString() === new Date(dateFilter).toDateString()
+                );
+            }
+
+            if (paymentFilter) {
+                filteredSales = filteredSales.filter(sale => sale.paymentMethod === paymentFilter);
+            }
+
+            renderSales(filteredSales);
+        }
+
+        // Global functions
+        window.viewSaleDetails = (id) => {
+            console.log('View sale details:', id);
+        };
+
+        window.printReceipt = (id) => {
+            console.log('Print receipt:', id);
+        };
+
+        // Initialize
+        await loadData();
+    }
+
+    function showToast(message, type = 'success') {
+        const toast = document.createElement('div');
+        toast.className = `toast ${type === 'success' ? 'bg-green-500' : 'bg-red-500'} text-white`;
+        toast.textContent = message;
+        document.body.appendChild(toast);
+
+        setTimeout(() => toast.classList.add('show'), 100);
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+</script>
+</body>
+</html>
