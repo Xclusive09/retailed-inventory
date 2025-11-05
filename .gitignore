@@ -1,12 +1,21 @@
+# Boutique Inventory Management System - .gitignore
+
 # Node.js dependencies
 node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Package manager lock files
+# Package manager files
 package-lock.json
 yarn.lock
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
 # Runtime data
 pids
@@ -14,79 +23,39 @@ pids
 *.seed
 *.pid.lock
 
-# Coverage directory used by tools like istanbul
+# Coverage and test output
 coverage/
 *.lcov
-
-# nyc test coverage
 .nyc_output
+coverage.html
 
-# Grunt intermediate storage (https://gruntjs.com/creating-plugins#storing-task-files)
-.grunt
-
-# Bower dependency directory (https://bower.io/)
-bower_components
-
-# node-waf configuration
-.lock-wscript
-
-# Compiled binary addons (https://nodejs.org/api/addons.html)
-build/Release
-
-# Dependency directories
-jspm_packages/
-
-# Optional npm cache directory
-.npm
-
-# Optional eslint cache
-.eslintcache
-
-# Optional REPL history
-.node_repl_history
-
-# Output of 'npm pack'
+# Build outputs
+dist/
+build/
 *.tgz
+*.tar.gz
+*.zip
 
-# Yarn Integrity file
-.yarn-integrity
+# Tailwind CSS generated files
+assets/css/styles.min.css
+assets/css/*.map
 
-# dotenv environment variables file
-.env
-.env.test
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+# Application logs
+*.log
+logs/
+app.log
+error.log
+access.log
 
-# parcel-bundler cache (https://parceljs.org/)
-.cache
+# Cache directories
+.cache/
+.tmp/
 .parcel-cache
-
-# next.js build output
-.next
-
-# nuxt.js build output
-.nuxt
-
-# vuepress build output
-.vuepress/dist
-
-# Serverless directories
-.serverless
-
-# FuseBox cache
-.fusebox/
-
-# DynamoDB Local files
-.dynamodb/
-
-# TernJS port file
-.tern-port
 
 # IDE and Editor files
 .vscode/
 !.vscode/settings.json
+!.vscode/extensions.json
 *.code-workspace
 .idea/
 *.iml
@@ -104,61 +73,34 @@ jspm_packages/
 .Trashes
 ehthumbs.db
 Thumbs.db
-
-# Log files
-*.log
-logs/
+Desktop.ini
+$RECYCLE.BIN/
+.directory
 
 # Temporary files
 tmp/
 temp/
-
-# Build outputs
-dist/
-build/
-
-# CSS build outputs (if using CSS preprocessors)
-assets/css/styles.min.css
-assets/css/*.map
+*.tmp
+*.temp
 
 # Backup files
 *.bak
 *.backup
 *.orig
 
-# Database files (if any local databases are used)
+# Database files (for future use)
 *.sqlite
 *.sqlite3
 *.db
 
-# Application specific
-# User uploaded files (if any)
+# User uploaded content
 uploads/
 public/uploads/
+assets/uploads/
 
-# Local storage data backups
-data/backups/
+# Mock data backups
+assets/data/backups/
 *.json.backup
-
-# Test coverage
-coverage.html
-
-# Application logs
-app.log
-error.log
-access.log
-
-# Cache directories
-.cache/
-.tmp/
-
-# Distribution files
-*.tar.gz
-*.zip
-
-# Local configuration overrides
-config/local.js
-config/local.json
 
 # Sensitive data
 secrets/
@@ -166,33 +108,23 @@ private/
 *.key
 *.pem
 
-# Claude AI (keep existing)
-.claude/
+# Local configuration overrides
+config/local.js
+config/local.json
 
-# macOS
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
+# Optional npm cache
+.npm
+.eslintcache
+.node_repl_history
 
-# Windows
-*.tmp
-*.temp
-Desktop.ini
-$RECYCLE.BIN/
+# HTTP server cache
+.http-server-cache/
 
-# Linux
-*~
-.directory
-
-# Build outputs
-dist/
-build/
-*.tgz
-*.tar.gz
-
-# CSS build artifacts (if using Tailwind CLI)
-*.css.map
+# Development tools
+.grunt
+bower_components
+jspm_packages/
+.fusebox/
+.dynamodb/
+.tern-port
+.yarn-integrity
