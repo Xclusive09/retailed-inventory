@@ -1,10 +1,15 @@
 // assets/data/mock-data.js
+import { categories, suppliers, trendingItems, recentActivities, salesStats, inventoryAlerts, userActivity } from './mock-pages-data.js';
+
 // Storage keys
 const STORAGE_KEYS = {
     INVENTORY: 'inventory_data',
     SALES: 'sales_data',
     PURCHASES: 'purchases_data',
-    USERS: 'users_data'
+    USERS: 'users_data',
+    CATEGORIES: 'categories_data',
+    SUPPLIERS: 'suppliers_data',
+    ACTIVITIES: 'activities_data'
 };
 
 // Mock inventory data
@@ -51,4 +56,37 @@ export function initializeMockData() {
     if (!localStorage.getItem(STORAGE_KEYS.USERS)) {
         localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(mockUsers));
     }
+    if (!localStorage.getItem(STORAGE_KEYS.CATEGORIES)) {
+        localStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(categories));
+    }
+    if (!localStorage.getItem(STORAGE_KEYS.SUPPLIERS)) {
+        localStorage.setItem(STORAGE_KEYS.SUPPLIERS, JSON.stringify(suppliers));
+    }
+    if (!localStorage.getItem(STORAGE_KEYS.ACTIVITIES)) {
+        localStorage.setItem(STORAGE_KEYS.ACTIVITIES, JSON.stringify({
+            trending: trendingItems,
+            recent: recentActivities,
+            stats: salesStats,
+            alerts: inventoryAlerts,
+            userLogs: userActivity
+        }));
+    }
+}
+
+export function getCategories() {
+    return JSON.parse(localStorage.getItem(STORAGE_KEYS.CATEGORIES)) || [];
+}
+
+export function getSuppliers() {
+    return JSON.parse(localStorage.getItem(STORAGE_KEYS.SUPPLIERS)) || [];
+}
+
+export function getActivities() {
+    return JSON.parse(localStorage.getItem(STORAGE_KEYS.ACTIVITIES)) || {
+        trending: [],
+        recent: [],
+        stats: {},
+        alerts: [],
+        userLogs: []
+    };
 }
